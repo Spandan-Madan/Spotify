@@ -5,7 +5,7 @@ Team Members:
 - Spandan Madan
 - Mehul Smriti Raje
 - Timothy Lee
-- Benjamin Sanchez
+- Benjamin Sanchez-Lengeling
 
 Group TF: Patrick Ohiomoba
 
