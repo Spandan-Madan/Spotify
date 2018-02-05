@@ -4,11 +4,12 @@ Repo for the spotify project for capstone course (AC297R, 2018 Spring).
 
 Team Members:
 
-Spandan Madan
-Mehul Smriti Raje
-Timothy Lee
-Benjamin Sanchez-Lengeling
-Group TF: Patrick Ohiomoba
+* Spandan Madan
+* Mehul Smriti Raje
+* Timothy Lee
+* Benjamin Sanchez-Lengeling
+
+**Group TF:** Patrick Ohiomoba
 
 Directory Structure:
 
