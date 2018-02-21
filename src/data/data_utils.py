@@ -10,6 +10,7 @@ from random import shuffle
 import re
 import datetime
 
+
 def normalize_name(name):
     name = name.lower()
     name = re.sub(r"[.,\/#!$%\^\*;:{}=\_`~()@]", ' ', name)
@@ -20,17 +21,16 @@ def normalize_name(name):
 def to_date(epoch):
     return datetime.datetime.fromtimestamp(epoch).strftime("%Y-%m-%d")
 
-
 def process_mpd(path, func, results, max_n=None, rand=False):
     filenames = os.listdir(path)
 
     def is_playlist(x): return x.startswith(
-        "mpd.slice.") and x.endswith(".json")
+        "mpd") and x.endswith(".json")
     good_files = [f for f in filenames if is_playlist(f)]
     if rand:
         shuffle(good_files)
     else:
-        good_files =sorted(good_files)
+        good_files = sorted(good_files)
 
     if max_n is not None:
         good_files = good_files[:min(max_n, len(good_files))]
@@ -42,6 +42,7 @@ def process_mpd(path, func, results, max_n=None, rand=False):
         mpd_slice = json.loads(js)
         for playlist in mpd_slice['playlists']:
             func(playlist, results)
+
     return
 
 
