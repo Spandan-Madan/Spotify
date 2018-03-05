@@ -16,7 +16,7 @@ X = np.hstack(x_data)
 # model and recommend
 model.load()
 rec = model.recommend(X, n_total=x)
-
+print(rec)
 # define eval metrics
 metrics = OrderedDict()
 
@@ -25,5 +25,5 @@ stats = OrderedDict()
 for key, metric in metrics.items():
     stats[key] = metric(plist, rec)
 # print results
-
+print(stats)
 
