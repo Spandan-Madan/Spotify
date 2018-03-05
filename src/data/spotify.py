@@ -3,6 +3,8 @@ import spotipy
 import os
 from math import ceil
 from tqdm import tqdm_notebook as tqdm
+import fuzzywuzzy as fuzz
+import numpy as np
 
 
 def chunker(seq, size):
@@ -35,3 +37,60 @@ def replace_none(rows):
         if not isinstance(row, dict):
             rows[indx] = dummy_feature.copy()
     return
+
+
+def unique_genres(df, genre_col='genres'):
+    genres = set()
+    for g in df[genre_col]:
+        genres = genres.union(g)
+    return list(genres)
+
+
+def fix_track_uri(df, subset, sp):
+    n_fixed = 0
+    for indx, row in df[subset].iterrows():
+        tracks = sp.search(row['title'], limit=10,
+                           offset=0, type='track', market=None)
+        print(row['title'], row['artist'])
+        best_uri = None
+        best_ll = -np.inf
+        best_name = None
+        for t in tracks['tracks']['items']:
+            q_name = normalize_name(t['artists'][0]['name'])
+            ll = fuzz.ratio(row['artist'], q_name)
+            if ll > best_ll:
+                best_uri = t['uri']
+                best_ll = ll
+                best_name = q_name
+
+        print(best_ll, best_name, best_uri)
+        if best_ll > 60:
+            df.at[indx, 'uri'] = best_uri
+            n_fixed += 1
+    print('Fixed {} out of {}'.format(n_fixed, sum(subset)))
+    return df
+
+
+def fix_artist_uri(df, subset, sp):
+    n_fixed = 0
+    for indx, row in df[subset].iterrows():
+        arts = sp.search(row['artist'], limit=10, offset=0,
+                         type='artist', market=None)
+        print(row['title'], row['artist'])
+        best_uri = None
+        best_ll = -np.inf
+        best_name = None
+        for a in arts['artists']['items']:
+            q_name = normalize_name(a['name'])
+            ll = fuzz.ratio(row['artist'], q_name)
+            if ll > best_ll:
+                best_uri = a['uri']
+                best_ll = ll
+                best_name = q_name
+
+        print(best_ll, best_name, best_uri)
+        if best_ll > 60:
+            df.at[indx, 'artist_uri'] = best_uri
+            n_fixed += 1
+    print('Fixed {} out of {}'.format(n_fixed, sum(subset)))
+    return df
