@@ -5,6 +5,7 @@ from math import ceil
 from tqdm import tqdm_notebook as tqdm
 import fuzzywuzzy as fuzz
 import numpy as np
+from data_utils import normalize_name
 
 
 def chunker(seq, size):
