@@ -1,0 +1,117 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{R}
+# cast factors to characters
+yt_data <- read.csv('YT_Scripts_and_Data/partial_partial_yt_data.csv')
+yt_data <- data.frame(document = yt_data$song, text = yt_data$all_comments)
+head(yt_data)
+```
+
+```{R}
+# sub_data <- yt_data[1:5000,2:104]
+yt_data$document <- as.character(yt_data$document)
+yt_data$text <- as.character(yt_data$text)
+yt_data <- unique(yt_data)
+
+song_list <- yt_data$document
+yt_data$document <- seq(1:length(song_list)+1)
+head(yt_data)
+```
+
+
+```{R warnings=FALSE}
+# load libraries
+library(topicmodels) #topic modeling functions
+library(stringr) #common string functions
+library(tidytext) #tidy text analysis
+suppressMessages(library(tidyverse)) #data manipulation and visualization
+#messages give R markdown compile error so we need to suppress it
+
+## Source topicmodels2LDAvis & optimal_k functions
+invisible(lapply(file.path("https://raw.githubusercontent.com/trinker/topicmodels_learning/master/functions",
+c("topicmodels2LDAvis.R", "optimal_k.R")),
+devtools::source_url))
+```
+
+
+```{R}
+yt_data_split <- yt_data %>% unnest_tokens(word, text)
+head(yt_data_split)
+```
+
+```{R}
+#library("tm")
+
+#tm_map(abs, removeWords, c(stopwords("english"),"song", "watch", "music", "video", #"www.youtube.com", "listening", "time", "people", "heard", "makes")) 
+#stop_words <- c(stop_words, "song", "watch", "music", "video", "www.youtube.com", #"listening", "time", "people", "heard", "makes")
+
+add_stop<-c("song", "watch", "music", "video", "www.youtube.com", "listening", "time", "people", "heard", "makes")
+stop_words_add<-add_row(stop_words, word = add_stop)
+
+#add_stop<-c("la","it’s","don’t","that’s","yeah","ya","uh","ye","ra","yo")
+#stop_words_add<-add_row(stop_words, 
+#word = add_stop)
+#stop_words_add<-stop_words_add[-which(stop_words_add[,1]=='me'),]
+
+yt_data_dwc <- yt_data_split %>%
+  anti_join(stop_words_add) %>%
+  count(document, word, sort = TRUE) %>%
+  ungroup()
+
+head(yt_data_dwc)
+```
+
+
+```{R}
+yt_data_dtm <- yt_data_dwc %>% cast_dtm(document, word, n)
+yt_data_dtm
+```
+
+
+## LDA
+
+```{R}
+control <- list(burnin = 500, iter = 1000, keep = 100, seed = 46)
+k_means <- optimal_k(yt_data_dtm,max.k=30,control = control)
+```
+
+```{R}
+show(k_means)
+```
+
+
+```{R}
+# lda_ <- LDA(yt_data_dtm, control=list(seed=0), k = 30) 
+```
+
+```{R}
+terms(lda_,20)  # gives the top 10 terms in each topic
+```
+
+
+```{R}
+k = 30
+gammaDF <- as.data.frame(lda_@gamma) 
+names(gammaDF) <- c(1:k)
+#head(gammaDF)
+new_df <- cbind(document = song_list[1:2981], gammaDF)
+head(new_df)
+```
+
+
+```{R}
+# Now for each doc, find just the top-ranked topic   
+toptopics <- as.data.frame(cbind(document = row.names(gammaDF), 
+  topic = apply(gammaDF,1,function(x) names(gammaDF)[which(x==max(x))])))
+```
+
+```{R}
+# inspect...
+new_toptopics <- cbind(document = song_list[1:2981], toptopics)
+#new_toptopics[new_toptopics$topic == 18,]
+#new_toptopics[new_toptopics$topic == 26,]
+new_toptopics[new_toptopics$topic == 28,]
+```
