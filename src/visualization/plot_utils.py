@@ -3,6 +3,7 @@ import seaborn as sns
 from scipy import stats
 import matplotlib.patches as mpatches
 import numpy as np
+from IPython.core.display import display, HTML
 
 
 def dist_stats_box(y):
@@ -22,3 +23,7 @@ def dist_stats_box(y):
                loc='best', frameon=False)
 
     return
+
+
+def html_header(txt, lvl=1):
+    return display(HTML('<h{:d}>{:s}</h{:d}>'.format(lvl, txt, lvl)))
