@@ -21,6 +21,7 @@ def normalize_name(name):
 def to_date(epoch):
     return datetime.datetime.fromtimestamp(epoch).strftime("%Y-%m-%d")
 
+
 def process_mpd(path, func, results, max_n=None, rand=False):
     filenames = os.listdir(path)
 
@@ -43,6 +44,21 @@ def process_mpd(path, func, results, max_n=None, rand=False):
         for playlist in mpd_slice['playlists']:
             func(playlist, results)
 
+    return
+
+
+def read_playlist(path, pid):
+    low_id = pid - pid % 1000
+    hi_id = low_id + 999
+    name = 'mpd.slice.{:d}-{:d}.json'.format(low_id, hi_id)
+    filename = os.path.join(path, name)
+    with open(filename) as f:
+        js = f.read()
+    mpd_slice = json.loads(js)
+    for playlist in mpd_slice['playlists']:
+        if playlist['pid'] == pid:
+            return playlist
+    raise ValueError('Did not find playlist {} in {}'.format(pid, filename))
     return
 
 
