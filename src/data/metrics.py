@@ -42,16 +42,16 @@ def diversity(plist, dist_f, norm_f):
 def r_precision(true, pred):
     """
     pred: a single prediction playlist
-    gold: ground truth
+    true: ground truth
 
     """
-    return list(set().union(true, pred)) / len(true)
+    return len(set().intersection(true, pred)) / float(len(true))
 
 
 def recommended_song_click(true, pred):
     """
     pred: list of predictions
-    gold: ground truth
+    true: ground truth
     """
     cnt = 1
     for predictions in pred:
