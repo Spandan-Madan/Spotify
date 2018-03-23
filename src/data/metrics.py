@@ -45,7 +45,7 @@ def r_precision(true, pred):
     true: ground truth
 
     """
-    return len(set().intersection(true, pred)) / float(len(true))
+    return len(set(true).intersection(set(pred))) / float(len(true))
 
 
 def recommended_song_click(true, pred):
