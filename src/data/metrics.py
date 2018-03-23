@@ -19,6 +19,10 @@ def pearson(xi, xj):
     return pearsonr(xi, xj)[0]
 
 
+def inv_pearson(xi, xj):
+    return 1.0 / pearson(xi, xj)
+
+
 def diversity(plist, dist_f, norm_f):
     """ diversity of a playlist
 
@@ -34,24 +38,26 @@ def diversity(plist, dist_f, norm_f):
 
     return val
 
-def r_precision(gold, pred):
+
+def r_precision(true, pred):
     """
     pred: a single prediction playlist
     gold: ground truth
 
     """
-    return list(set().union(gold, pred)) / len(gold)
+    return list(set().union(true, pred)) / len(true)
 
-def recommended_song_click(gold, pred):
+
+def recommended_song_click(true, pred):
     """
     pred: list of predictions
     gold: ground truth
     """
     cnt = 1
     for predictions in pred:
-        if gold in predictions:
-            break;
+        if true in predictions:
+            break
         else:
             cnt += 1
 
-    return cnt/10 * 1.0
+    return cnt / 10 * 1.0
