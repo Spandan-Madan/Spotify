@@ -1,6 +1,23 @@
 import numpy as np
 from scipy.spatial.distance import cosine, hamming
 from scipy.stats import pearsonr
+from sklearn.metrics.pairwise import cosine_similarity
+
+
+def cosine_sim_closest(X, x_query, n=1):
+    lim = n + 1
+    sim = cosine_similarity(X, x_query.reshape(1, -1)).ravel()
+    ind = np.argpartition(sim, -lim)[-lim:]
+    ind = ind[np.argsort(sim[ind])]
+    return ind[:-1], sim[ind[:-1]]
+
+
+def cosine_sim_top(X, x_query, tol=0.95):
+    sim = cosine_similarity(X, x_query.reshape(1, -1)).ravel()
+    lim = sum(sim > tol)
+    ind = np.argpartition(sim, -lim)[-lim:]
+    ind = ind[np.argsort(sim[ind])]
+    return ind[:-1], sim[ind[:-1]]
 
 
 def inv_cosine(xi, xj):
