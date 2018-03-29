@@ -62,17 +62,19 @@ def IDCG(true, pred):
 
 
 def DCG(true, pred):
-    relevant = set(true).intersection(set(pred))
-    n_common = len(set(true).intersection(set(pred)))
+    ranks = [rank for rank, item in enumerate(pred) if item in true]
+    n_common = len(ranks)
     if n_common == 0:
         return 0.0
     else:
-
-        return
+        score = 0.0
+        for order, rank in enumerate(ranks):
+            score += float(rank) / np.log2((order + 2))
+        return score
 
 
 def NDCG(true, pred):
-    return DCG(true, pred) / IDCG(true, pred)
+    return DCG(true, pred) / DCG(true, true)
 
 
 def r_precision(true, pred):
