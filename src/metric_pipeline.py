@@ -1,10 +1,16 @@
-from data.data_utils import read_playlist
-from data.metrics import r_precision, cosine_sim_closest, cosine_sim_top
+# sportify specific
+from data.metrics_track import r_precision, cosine_sim_closest, cosine_sim_top, NDCG
+from visualization.plot_utils import write_latex_table
+# general
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from features.audio_features import AudioFeatures
 from features.tracks_info import TrackInfo
+from collections import OrderedDict
+
+k_range = [1, 5, 10, 25, 100]
+max_picks = 500
 
 tracks = TrackInfo()
 # audio features
@@ -20,19 +26,24 @@ n_songs = len(p_ids)
 
 suggest_df = pd.DataFrame()
 n_top = 10
-x_pred = []
+x_pred = OrderedDict()
+stats = []
 print('Test on playlist {:d}'.format(pid))
-for i in tqdm(range(n_songs), total=n_songs):
-    x_partial = xp[:i, :]
-    x_query = xp[i - 1, :]
-    ind, sim = cosine_sim_top(X, x_query, 0.95)
-    if len(ind) == 0:
-        ind, sim = cosine_sim_closest(X, x_query, 1)
-    # x_pred[i*n_top:(i+1)*n_top]=ind
-    x_pred.append(ind)
+for k in k_range:
+    x_pred[k] = []
+    k_picks = int(max_picks / k)
+    for i in range(k):
+        x_query = xp[i - 1, :]
+        ind, sim = cosine_sim_closest(X, x_query, k_picks)
+        x_pred[k] = x_pred[k] + list(ind)
+    subset_ids = p_ids[k:]
+    result = OrderedDict()
+    result['k'] = k
+    result['r precision'] = r_precision(subset_ids, x_pred[k])
+    result['NDGC'] = NDCG(subset_ids, x_pred[k])
+    stats.append(result)
 
-    x_next = xp[i, :]
-x_pred = np.array(x_pred)
+sdf = pd.DataFrame(stats)
+print(sdf)
 
-score = r_precision(p_ids, list(np.concatenate(x_pred)))
-print(score)
+write_latex_table(sdf, 'metrics', adir='.', render=True)
