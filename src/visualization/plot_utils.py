@@ -4,6 +4,9 @@ from scipy import stats
 import matplotlib.patches as mpatches
 import numpy as np
 from IPython.core.display import display, HTML
+import pandas as pd
+import os
+import subprocess
 
 
 def dist_stats_box(y):
@@ -27,3 +30,44 @@ def dist_stats_box(y):
 
 def html_header(txt, lvl=1):
     return display(HTML('<h{:d}>{:s}</h{:d}>'.format(lvl, txt, lvl)))
+
+
+LATEX_TABLE = r'''\documentclass{{standalone}}
+\usepackage{{booktabs}}
+\usepackage{{multirow}}
+\usepackage{{graphicx}}
+\usepackage{{xcolor,colortbl}}
+
+\begin{{document}}
+
+{}
+
+\end{{document}}
+'''
+
+
+def pandas_settings():
+    pd.set_option('precision', 2)
+    pd.options.display.float_format = '{:,.2f}'.format
+    return
+
+
+def write_latex_table(df, name, adir='', render=True):
+    # table results
+    tex_name = '{}.tex'.format(name)
+    filename = os.path.join(adir, '{}.tex'.format(name))
+    a_str = df.to_latex(multicolumn=True, multirow=True, escape=False,index=False)
+    with open(filename, 'w') as a_file:
+        a_file.write(LATEX_TABLE.format(a_str))
+    if render:
+        p = subprocess.Popen(['pdflatex', tex_name], cwd=adir)
+        p.wait()
+        pdf_file = tex_name.replace('.tex', '.pdf')
+        png_file = tex_name.replace('.tex', '.png')
+        p = subprocess.Popen(
+            ['convert', '-density', '300', pdf_file, '-quality', '90', png_file], cwd=adir)
+        p.wait()
+        # remove latex stuff
+        subprocess.Popen(['rm', '{}.aux'.format(name)], cwd=adir)
+        subprocess.Popen(['rm', '{}.log'.format(name)], cwd=adir)
+    return

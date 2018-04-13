@@ -1,0 +1,5 @@
+DROPBOX SPOTIFY FOLDER DOWNLOAD - https://www.dropbox.com/sh/i0ivq4hocvrrh5e/AADG3wjr2M8jIAHv8tsZCGxOa?dl=0
+
+DOC2VEC READING SCRIPT - https://www.dropbox.com/s/l98wmxtcte6n4qk/doctovec.py?dl=0
+DOC2VEC (LYRIC) - https://www.dropbox.com/s/qyxhrgve1g7t526/lyric_doc2vec_model.p?dl=0
+DOC2VEC (CULTURE) - https://www.dropbox.com/s/mymamyiy17svxsw/doc2vec_culture_model.p?dl=0
