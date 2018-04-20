@@ -68,6 +68,16 @@ Organization
     └── tox.ini            <- tox file with settings for running tox; see tox.testrun.org
 
 
+
+# Running Pooling model
+```
+# Make sure that modules/ is in your path. use sys.append for it if needed.
+from pooling_model import pooled_songs
+playlist = [('The Scientist','Coldplay'),('Immigrant Song','Led Zeppelin'),('T.N.T.','AC/DC')]
+VERBOSE = False #Don't print out things
+pickle_files_folder = <path of the folder where you've moved word2vec models and other pickle files
+songs_pool, most_simiilar_artists = pooled_songs(playlist,VERBOSE,pickle_files_folder)
+```
 --------
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
