@@ -2,15 +2,18 @@ import numpy as np
 import pandas as pd
 from os.path import join as join_path
 from sklearn.preprocessing import StandardScaler, RobustScaler
-
+import sys
+sys.path.append("..")
+from data import compressed_pickle as cpick
 DATA_PATH = '../data/interim'
 
 
 class AudioFeatures(object):
 
     def __init__(self, subset=''):
-        self.datafile = join_path(DATA_PATH, '5k_track_audiofeatures.csv')
-        self.df = pd.read_csv(self.datafile)
+        afile = join_path(DATA_PATH, '{}audio_features.pkl.bz2'.format(subset))
+        self.df = cpick.load(afile)
+        print(self.df.columns)
         self.preprocess(self.df)
 
     def preprocess(self, df):
@@ -26,9 +29,9 @@ class AudioFeatures(object):
                     'loudness': RobustScaler(),
                     'speechiness': RobustScaler(),
                     'tempo': StandardScaler(),
-                    'valence': StandardScaler(),
-                    'popularity': StandardScaler()
+                    'valence': StandardScaler()
                     }
+        #,            'popularity': StandardScaler()
         # impute
         cols = list(preprocs.keys())
         f_df = df[cols]
@@ -43,6 +46,7 @@ class AudioFeatures(object):
         # fit transformation
         for key, pre in preprocs.items():
             pre.fit(self.df[key].values.reshape(-1, 1))
+        return
 
     def transform(self, df=None):
         if df is None:
@@ -54,5 +58,5 @@ class AudioFeatures(object):
             X[:, i] = pre.transform(df[key].values.reshape(-1, 1)).ravel()
         return X
 
-    def subset(self, ids):
-        return self.transform(self.df.loc[ids])
+    def subset(self, turis):
+        return self.transform(self.df.loc[turis])

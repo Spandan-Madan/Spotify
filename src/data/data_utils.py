@@ -46,6 +46,32 @@ def process_mpd(path, func, results, max_n=None, rand=False):
 
     return
 
+def process_mpd2(path, func_pl, results_pl, func_json, results_json, max_n=None, rand=False):
+    filenames = os.listdir(path)
+
+    def is_playlist(x): return x.startswith(
+        "mpd") and x.endswith(".json")
+    good_files = [f for f in filenames if is_playlist(f)]
+    if rand:
+        shuffle(good_files)
+    else:
+        good_files = sorted(good_files)
+
+    if max_n is not None:
+        good_files = good_files[:min(max_n, len(good_files))]
+
+    for n_file,filename in tqdm(enumerate(good_files),total=len(good_files)):
+        fullpath = os.sep.join((path, filename))
+        with open(fullpath) as f:
+            js = f.read()
+        mpd_slice = json.loads(js)
+        for playlist in mpd_slice['playlists']:
+            func_pl(playlist, results_pl)
+        func_json(n_file,results_json,results_pl)
+
+    return
+
+
 
 def read_playlist(path, pid):
     low_id = pid - pid % 1000

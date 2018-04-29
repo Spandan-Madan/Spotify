@@ -6,10 +6,10 @@ from tqdm import tqdm_notebook as tqdm
 import fuzzywuzzy as fuzz
 import numpy as np
 from data_utils import normalize_name
+import random
 
-
-def chunker(seq, size):
-    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
+def chunker(seq, size,start=0):
+    return (seq[pos:pos + size] for pos in range(start, len(seq), size))
 
 
 def setup_spotify():
@@ -22,18 +22,21 @@ def setup_spotify():
     return sp
 
 
-def df_chunk_apply(df, chunk_size, func):
+def df_chunk_apply(df, chunk_size, func,results,start=0):
     sp = setup_spotify()
-    n_chunks = ceil(len(df) / chunk_size)
-    rows = []
-    for chunk in tqdm(chunker(df, chunk_size), total=n_chunks):
-        rows += func(chunk, sp)
-    return rows
+    n_chunks = ceil( (len(df)-start) / chunk_size)
+    for indx,chunk in tqdm(enumerate(chunker(df, chunk_size,start)), total=n_chunks):
+        results = func(indx,chunk, sp,results)
+    return results
 
 
 def replace_none(rows):
     # check for None
-    dummy_feature = {k: None for k, v in rows[0].items()}
+    for row in rows:
+        if row is not None:
+            dummy_feature = {k: None for k, v in row.items()}
+            break
+
     for indx, row in enumerate(rows):
         if not isinstance(row, dict):
             rows[indx] = dummy_feature.copy()
