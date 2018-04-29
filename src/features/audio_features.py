@@ -1,3 +1,4 @@
+from .base_feature import Feature
 import numpy as np
 import pandas as pd
 from os.path import join as join_path
@@ -8,12 +9,12 @@ from data import compressed_pickle as cpick
 DATA_PATH = '../data/interim'
 
 
-class AudioFeatures(object):
+class AudioFeatures(Feature):
 
     def __init__(self, subset=''):
+        Feature.__init__(self)
         afile = join_path(DATA_PATH, '{}audio_features.pkl.bz2'.format(subset))
         self.df = cpick.load(afile)
-        print(self.df.columns)
         self.preprocess(self.df)
 
     def preprocess(self, df):
