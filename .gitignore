@@ -3,7 +3,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+# pooling
+pooling.png
+pooling.pdf
+pooling.tex
 data/pool/*
 # C extensions
 *.so
