@@ -9,7 +9,7 @@ class Feature(object):
 
         return
 
-    def transform(self,turis)
+    def transform(self,turis):
         '''
         Convert track a list of turis to a vector representation.
         Input: turis is a list of strings of length n

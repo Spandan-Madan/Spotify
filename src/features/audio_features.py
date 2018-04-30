@@ -49,9 +49,11 @@ class AudioFeatures(Feature):
             pre.fit(self.df[key].values.reshape(-1, 1))
         return
 
-    def transform(self, df=None):
-        if df is None:
+    def transform(self, turis=None):
+        if turis is None:
             df = self.df
+        else:
+            df = self.df.loc[turis]
         # get X vector
         X = np.zeros((len(df), len(self.cols)))
         for i, pair in enumerate(self.preprocs.items()):
@@ -59,5 +61,3 @@ class AudioFeatures(Feature):
             X[:, i] = pre.transform(df[key].values.reshape(-1, 1)).ravel()
         return X
 
-    def subset(self, turis):
-        return self.transform(self.df.loc[turis])
