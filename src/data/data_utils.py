@@ -9,7 +9,10 @@ import os
 from random import shuffle
 import re
 import datetime
+import functools, itertools, operator
 
+def product_size(iters):
+    return functools.reduce(operator.mul, map(len, iters), 1)
 
 def normalize_name(name):
     name = name.lower()

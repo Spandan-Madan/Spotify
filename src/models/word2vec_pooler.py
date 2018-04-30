@@ -28,7 +28,13 @@ class W2VPooler(object):
 
         return np.array(vecs),found
 
-    def rec_average(self,seeds, n=1000):
+    def recommend(self,seeds,n=1000,agg_strat='mean'):
+        if agg_strat=='mean':
+            return self.mean_pool(seeds,n)
+        else:
+            raise ValueError('{} not implemented'.format(agg_strat))
+
+    def mean_pool(self,seeds, n=1000):
         vecs, found = self.get_vecs(seeds)
 
         if self.verbose:

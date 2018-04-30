@@ -2,7 +2,8 @@ import pickle
 import bz2
 import numpy as np
 import sys
-def save(filename, myobj):
+
+def save(filename, myobj,verbose=True):
     """
     save object to file using pickle
 
@@ -14,11 +15,12 @@ def save(filename, myobj):
 
     if isinstance(myobj,np.ndarray):
         if not filename.endswith('.npy.bz2'):
-            filename = filename.split('.')[0]+'.npy.bz2'
+            filename = filename+'.npy.bz2'
     else:
         if not filename.endswith('.pkl.bz2'):
-            filename = filename.split('.')[0]+'.pkl.bz2'
-
+            filename = filename+'.pkl.bz2'
+    if verbose:
+        print('Saving to {}'.format(filename))
     try:
         f = bz2.BZ2File(filename, 'wb')
     except IOError as details:

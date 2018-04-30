@@ -65,5 +65,3 @@ class TrackInfo(object):
         aname = self.auri2aname[self.turi2auri[uri]]
         return '{} - {}'.format(tname,aname)
 
-
-
