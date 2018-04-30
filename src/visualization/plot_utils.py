@@ -25,27 +25,31 @@ def pooling_plots(stats):
     for i in stats:
         re_stats.append(OrderedDict([('pid',i['pid']),('k',i['k']),('strategy',i['strategy']),('n',i['n']),('metric','r-tracks'),('value',i['r-tracks'])]))
         re_stats.append(OrderedDict([('pid',i['pid']),('k',i['k']),('strategy',i['strategy']),('n',i['n']),('metric','r-artist'),('value',i['r-artist'])]))
-    p_df = pd.DataFrame(re_stats)
+    for indx,grp in pd.DataFrame(re_stats).groupby('strategy'):
 
-    sns.violinplot(x='k',y='value',hue='metric', data=p_df,cut=0,split=True)
-    plt.ylim([0,1])
-    plt.legend(bbox_to_anchor=(0.5, 1),ncol=2)
-    plt.show()
-    # distplots
-    cols = plt.rcParams['axes.prop_cycle'].by_key()['color']
-    p_df = pd.DataFrame(stats)
-    sns.distplot(p_df['r-tracks'],label='Tracks',color=cols[0])
-    dist_stats_box(p_df['r-tracks'])
-    plt.xlim([0,1])
-    plt.xlabel('R-precision (Tracks)')
-    plt.ylabel('Normalized Frequency')
-    plt.show()
-    sns.distplot(p_df['r-artist'],label='Artist',color=cols[1])
-    dist_stats_box(p_df['r-artist'])
-    plt.xlim([0,1])
-    plt.xlabel('R-precision (Artist)')
-    plt.ylabel('Normalized Frequency')
-    plt.show()
+        sns.violinplot(x='k',y='value',hue='metric', data=grp,cut=0,split=True)
+        plt.ylim([0,1])
+        plt.legend(bbox_to_anchor=(0.5, 1),ncol=2)
+        plt.title('Startegy = {}'.format(indx))
+        plt.show()
+        # distplots
+    for indx,grp in pd.DataFrame(stats).groupby('strategy'):
+        cols = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+        sns.distplot(grp['r-tracks'],label='Tracks',color=cols[0])
+        dist_stats_box(grp['r-tracks'])
+        plt.xlim([0,1])
+        plt.xlabel('R-precision (Tracks)')
+        plt.ylabel('Normalized Frequency')
+        plt.title('Strategy = {}'.format(indx))
+        plt.show()
+        sns.distplot(grp['r-artist'],label='Artist',color=cols[1])
+        dist_stats_box(grp['r-artist'])
+        plt.xlim([0,1])
+        plt.xlabel('R-precision (Artist)')
+        plt.ylabel('Normalized Frequency')
+        plt.title('Strategy = {}'.format(indx))
+        plt.show()
     return
 
 

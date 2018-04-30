@@ -11,6 +11,12 @@ import re
 import datetime
 import functools, itertools, operator
 
+
+def shuffle_list(*ls):
+    l =list(zip(*ls))
+    shuffle(l)
+    return zip(*l)
+
 def product_size(iters):
     return functools.reduce(operator.mul, map(len, iters), 1)
 
