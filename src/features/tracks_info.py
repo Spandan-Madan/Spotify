@@ -53,7 +53,7 @@ class TrackInfo(object):
 
     def random_tracks(self,k,exclude=None):
         extra = 0 if exclude is None else len(exclude)
-        turis = set(random.sample(self.turi2auri.keys(),k=k+extra))
+        turis = set(random.sample(list(self.tint2turi.values()),k=k+extra))
         if exclude:
             turis = turis -set(exclude)
         turis = list(turis)[:k]

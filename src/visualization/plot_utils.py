@@ -31,6 +31,7 @@ def pooling_plots(stats):
         plt.ylim([0,1])
         plt.legend(bbox_to_anchor=(0.5, 1),ncol=2)
         plt.title('Startegy = {}'.format(indx))
+        plt.ylabel('r-precision')
         plt.show()
         # distplots
     for indx,grp in pd.DataFrame(stats).groupby('strategy'):
