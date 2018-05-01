@@ -1,3 +1,4 @@
+from .base_feature import Feature
 import numpy as np
 import pandas as pd
 from os.path import join as join_path
@@ -8,12 +9,12 @@ from data import compressed_pickle as cpick
 DATA_PATH = '../data/interim'
 
 
-class AudioFeatures(object):
+class AudioFeatures(Feature):
 
     def __init__(self, subset=''):
+        Feature.__init__(self)
         afile = join_path(DATA_PATH, '{}audio_features.pkl.bz2'.format(subset))
         self.df = cpick.load(afile)
-        print(self.df.columns)
         self.preprocess(self.df)
 
     def preprocess(self, df):
@@ -48,9 +49,11 @@ class AudioFeatures(object):
             pre.fit(self.df[key].values.reshape(-1, 1))
         return
 
-    def transform(self, df=None):
-        if df is None:
+    def transform(self, turis=None):
+        if turis is None:
             df = self.df
+        else:
+            df = self.df.loc[turis]
         # get X vector
         X = np.zeros((len(df), len(self.cols)))
         for i, pair in enumerate(self.preprocs.items()):
@@ -58,5 +61,3 @@ class AudioFeatures(object):
             X[:, i] = pre.transform(df[key].values.reshape(-1, 1)).ravel()
         return X
 
-    def subset(self, turis):
-        return self.transform(self.df.loc[turis])
