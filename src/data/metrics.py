@@ -75,7 +75,7 @@ def NDCG(true, pred):
     return DCG(true, pred) / IDCG(true, pred)
 
 
-def r_precision(true, pred):
+def recall(true, pred):
     """
     pred: a single prediction playlist
     true: ground truth
