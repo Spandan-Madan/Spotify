@@ -1,6 +1,8 @@
 import gensim
 import sys
 import pickle
+from base_feature import Feature
+
 ROOT_NAME = '../data/w2v/'
 FILE_NAME_ARTIST = 'artist_w2v_model_1min_100dim'
 FILE_NAME_ALBUM = 'album_w2v_model_1min_100dim'
@@ -23,7 +25,7 @@ class word2vec_feature(Feature):
         if turis is None:
             raise ValueError('turis list is None.')
 
-        return val = [self.model[item] for item in turis]
+        return [self.model[item] for item in turis]
 
     def distance(self,seeds,pool):
         '''
@@ -37,7 +39,7 @@ class word2vec_feature(Feature):
 
         output = []
         for src in seed:
-            line = [self.model[item].similarity(item, tgt) for tgt in pool]
+            line = [self.model.similarity(item, tgt) for tgt in pool]
             output.append(line)
         
         return output
