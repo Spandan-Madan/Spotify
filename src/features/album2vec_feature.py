@@ -16,7 +16,6 @@ class Album2vec_feature(Feature):
         Input: turis is a list of strings of length n
         Output: will return a vector of shape (n_dim,n)
         '''
-        val = []
         if turis is None:
             raise ValueError('turis list is None.')
 
@@ -29,5 +28,12 @@ class Album2vec_feature(Feature):
                pool is a list
         Output: will return a vector of shape (n_dim,n)
         '''
+        seed = self.transform(seed)
+        pool = self.transform(pool)
 
-        return
+        output = []
+        for src in seed:
+            line = [self.model[item].similarity(item, tgt) for tgt in pool]
+            output.append(line)
+        
+        return output

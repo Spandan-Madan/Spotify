@@ -29,4 +29,12 @@ class Track2vec_feature(Feature):
         Output: will return a vector of shape (n_dim,n)
         '''
 
-        return
+        seed = self.transform(seed)
+        pool = self.transform(pool)
+
+        output = []
+        for src in seed:
+            line = [self.model[item].similarity(item, tgt) for tgt in pool]
+            output.append(line)
+        
+        return output
