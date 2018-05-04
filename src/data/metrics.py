@@ -97,3 +97,12 @@ def recommended_song_click(true, pred):
             cnt += 1
 
     return cnt / 10 * 1.0
+
+def r_precision(true, pred):
+    """
+    pred: a single, ranked prediction playlist
+    true: ground truth
+    """
+    gt_length = len(true)
+    top_preds = pred[:gt_length]
+    return len(set(true).intersection(set(top_preds))) / float(len(true))
