@@ -11,6 +11,9 @@ data/pooling/*
 # C extensions
 *.so
 
+# models
+models/*
+
 # Distribution / packaging
 .Python
 build/
