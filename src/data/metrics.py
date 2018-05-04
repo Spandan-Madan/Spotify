@@ -67,8 +67,11 @@ def DCG(true, pred):
     if n_common == 0:
         return 0.0
     else:
-
-        return
+        ranks = [i for i,p in enumerate(pred) if p in relevant]
+        score = 0.0
+        for order, rank in enumerate(ranks):
+            score += float(rank) / np.log2((order + 2))
+        return score
 
 
 def NDCG(true, pred):
