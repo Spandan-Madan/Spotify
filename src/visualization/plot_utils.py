@@ -10,6 +10,18 @@ import subprocess
 import itertools
 import matplotlib as mpl
 from collections import OrderedDict
+
+
+def save_result(name, adir=None):
+    if adir is None:
+        adir = '../results'
+    filename = os.path.join(adir, '{}.png'.format(name))
+    plt.savefig(filename, dpi=300, transparent=False)
+    filename = os.path.join(adir, '{}.svg'.format(name))
+    plt.savefig(filename, dpi=300, transparent=True)
+    return
+
+
 def glance_dict(d,n=3):
     return dict(itertools.islice(d.items(), n))
 
@@ -110,7 +122,7 @@ def plot_settings():
     # matplotlib stuff
     plt_params = {
         'figure.figsize': (10, 6.5),
-        'lines.linewidth': 3,
+        'lines.linewidth': 2,
         'axes.linewidth': 2.5,
         'savefig.dpi': 300,
         'xtick.major.width': 2.5,
