@@ -13,6 +13,7 @@ data/pooling/*
 
 # models
 models/*
+data/pooling/*
 
 # Distribution / packaging
 .Python
