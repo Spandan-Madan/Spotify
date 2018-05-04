@@ -13,7 +13,7 @@ class Popularity(Feature):
 
     def __init__(self, subset=''):
         Feature.__init__(self)
-        afile = join_path(DATA_PATH, '{}popularity.pkl.bz2'.format(subset))
+        afile = join_path(DATA_PATH, 'track_uri2popularity.pkl.bz2'.format(subset))
         self.pop = cpick.load(afile)
         self.preprocess()
 
