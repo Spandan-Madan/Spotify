@@ -58,17 +58,17 @@ class TrackInfo(object):
             turis = turis -set(exclude)
         turis = list(turis)[:k]
         auris = [self.turi2auri[t] for t in turis]
-        return turis, auris
+        return list(turis), list(auris)
 
-    def get_playlist_pooltest(self,pid,k):
+    def get_playlist_pooltest(self,pid,k,n):
         turi,auri = self.get_playlist(pid)
         turi_seed,auri_seed = turi[:k],auri[:k]
         turi_true,auri_true = turi[k:],auri[k:]
-        turi_sub, auri_sub = self.random_tracks(k,exclude=turi_true)
-        turi_pool = turi_sub+ turi_true
+        turi_sub, auri_sub = self.random_tracks(n-len(turi_true),exclude=turi_true)
+        turi_pool = turi_sub + turi_true
         auri_pool = auri_sub+ auri_true
         turi_pool,auri_pool = shuffle_list(turi_pool,auri_pool)
-        return turi_seed,auri_seed, turi_true,auri_true, turi_pool,auri_pool
+        return turi_seed,auri_seed, turi_true,auri_true, list(turi_pool),list(auri_pool)
 
     def track_info2uris(self,track_name,artist_name):
         auris = self.aname2auri[artist_name]

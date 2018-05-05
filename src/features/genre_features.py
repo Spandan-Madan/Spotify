@@ -69,9 +69,9 @@ class genre_feature(Feature):
 		for src in seed:
 			line = [spatial.distance.cosine(src, tgt) for tgt in pool]
 			output.append(line)
-		
+
 		return output
 
 a = genre_feature()
-uri = ['2wIVse2owClT7go1WT98tk', '6vWDO969PvNqNYHIOW5v0m']
-a.transform(uri)
+turi = ['2wIVse2owClT7go1WT98tk', '6vWDO969PvNqNYHIOW5v0m']
+a.transform(turi)

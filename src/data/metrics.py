@@ -67,8 +67,11 @@ def DCG(true, pred):
     if n_common == 0:
         return 0.0
     else:
-
-        return
+        ranks = [i for i,p in enumerate(pred) if p in relevant]
+        score = 0.0
+        for order, rank in enumerate(ranks):
+            score += float(rank) / np.log2((order + 2))
+        return score
 
 
 def NDCG(true, pred):
@@ -97,3 +100,12 @@ def recommended_song_click(true, pred):
             cnt += 1
 
     return cnt / 10 * 1.0
+
+def r_precision(true, pred):
+    """
+    pred: a single, ranked prediction playlist
+    true: ground truth
+    """
+    gt_length = len(true)
+    top_preds = pred[:gt_length]
+    return len(set(true).intersection(set(top_preds))) / float(len(true))

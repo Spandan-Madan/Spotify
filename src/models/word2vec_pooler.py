@@ -161,13 +161,13 @@ class W2VPooler(object):
         return pool_turi, pool_dist
 
 
-    def split_pool(self,seeds, n=1000,n_clusters=10,**kwargs):
+    def split_pool(self,seeds, n=1000,**kwargs):
         vecs, found = self.get_vecs(seeds)
 
         # find most similar
         pool_dist=[]
         pool_turi=[]
-        n_pick = ceil(n/n_clusters)
+        n_pick = ceil(n/len(seeds))
         for vec in vecs:
             results = self.model.wv.similar_by_vector(vec,topn=n_pick)
             pool_dist = pool_dist+[i[1] for i in results]
