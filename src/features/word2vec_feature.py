@@ -1,20 +1,48 @@
+from .base_feature import Feature
 import gensim
 import sys
 import pickle
+from data import compressed_pickle as cpick
 from base_feature import Feature
+import numpy as np
+import pandas as pd
+from os.path import join as join_path
+import sys
+sys.path.append("..")
 
+DATA_PATH = '../data/interim'
 ROOT_NAME = '../data/w2v/'
 FILE_NAME_ARTIST = 'artist_w2v_model_1min_100dim'
 FILE_NAME_ALBUM = 'album_w2v_model_1min_100dim'
 
-class word2vec_feature(Feature):
+class Word2vecFeature(Feature):
 
-    def __init__(self, subset='', PATH= ROOT_NAME+FILE_NAME_ARTIST):
+    def __init__(self, subset='', ROOT_PATH= ROOT_NAME, w2v_type='artist', logging=True):
         '''
         PATH: PATH to your gensim generated word embedding. Default is artist path.
         '''
         Feature.__init__(self)
-        self.model = gensim.models.Word2Vec.load(ROOT_NAME_W2V + FILE_NAME)
+
+        if w2v_type == 'artist':
+            PATH = ROOT_PATH + FILE_NAME_ARTIST
+            afile = join_path(DATA_PATH, 'track_uri2artist_uri.pkl.bz2'.format(subset))
+            self.mapper = cpick.load(afile)
+        elif w2v_type == 'album':
+            PATH = ROOT_PATH + FILE_NAME_ALBUM
+            afile = join_path(DATA_PATH, 'track_uri2album_uri.pkl.bz2'.format(subset))
+            self.mapper = cpick.load(afile)
+        else:
+            PATH = ROOT_PATH + FILE_NAME_TRACK
+        
+        if logging:
+            print (PATH , 'IS LOADING')
+
+        self.model = gensim.models.Word2Vec.load(PATH)
+        self.wv = self.model.wv
+        self.wv_list = self.wv.vocab
+
+        if logging:
+            print ("LOADED W2V")
 
     def transform(self,turis):
         '''
@@ -24,22 +52,4 @@ class word2vec_feature(Feature):
         '''
         if turis is None:
             raise ValueError('turis list is None.')
-
-        return [self.model[item] for item in turis]
-
-    def distance(self,seeds,pool):
-        '''
-        Calculate the distance between two sets of tracks (seeds) and (pools). Will return a numpy array of distances.
-        Input: seeds is a list of track_uris (strings)
-               pool is a list
-        Output: will return a vector of shape (n_dim,n)
-        '''
-        seed = self.transform(seed)
-        pool = self.transform(pool)
-
-        output = []
-        for src in seed:
-            line = [self.model.similarity(item, tgt) for tgt in pool]
-            output.append(line)
-        
-        return output
+        return np.array([self.model[self.mapper[turi]] for turi in turis])

@@ -11,11 +11,15 @@ DATA_PATH = '../data/interim'
 
 class Popularity(Feature):
 
-    def __init__(self, subset=''):
+    def __init__(self, subset='', logging=True):
         Feature.__init__(self)
         afile = join_path(DATA_PATH, 'track_uri2popularity.pkl.bz2'.format(subset))
+        if logging:
+            print (afile, 'IS LOADING...')
         self.pop = cpick.load(afile)
         self.preprocess()
+        if logging:
+            print ('LOADED POPULARITY')
 
     def preprocess(self):
         values = np.array([v for v in list(self.pop.values()) if not np.isnan(v)])

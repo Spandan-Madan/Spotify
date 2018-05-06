@@ -59,5 +59,6 @@ class AudioFeatures(Feature):
         for i, pair in enumerate(self.preprocs.items()):
             key, pre = pair
             X[:, i] = pre.transform(df[key].values.reshape(-1, 1)).ravel()
+        print (X.shape)
         return X
 
