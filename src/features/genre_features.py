@@ -9,7 +9,7 @@ from data import compressed_pickle as cpick
 from gensim.models.wrappers import FastText
 import fastText
 from scipy import spatial
-
+from sklearn.manifold import TSNE
 
 DATA_PATH = '../data/interim'
 FASTTEXT_PATH = "/Users/timlee/Downloads/wiki.en/wiki.en.bin"
@@ -62,8 +62,13 @@ class GenreFeatures(Feature):
 		for turi in turis:
 			artist_uri = self.mapper[turi]
 			row = self.df[artist_uri]
+			if len(row) == 0:
+				np.array([0.0]*300)
+				output.append(artist_vec)
+				continue
 			artist_vec = np.array([self.model.get_sentence_vector(genre) for genre in row])
 			artist_vec = np.mean(artist_vec, axis=0)
 			output.append(artist_vec)
-		return np.array(output)
+		x = np.array(output)
+		return x
 
