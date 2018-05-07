@@ -14,7 +14,7 @@ DATA_PATH = '../data/interim'
 ROOT_NAME = '../data/w2v/'
 FILE_NAME_ARTIST = 'artist_w2v_model_1min_100dim'
 FILE_NAME_ALBUM = 'album_w2v_model_1min_100dim'
-
+FILE_NAME_TRACK = 'track_w2v_model_1min_100dim'
 class Word2vecFeature(Feature):
 
     def __init__(self, subset='', ROOT_PATH= ROOT_NAME, w2v_type='artist', logging=True):
@@ -37,6 +37,7 @@ class Word2vecFeature(Feature):
         if logging:
             print (PATH , 'IS LOADING')
 
+        self.w2v_type = w2v_type
         self.model = gensim.models.Word2Vec.load(PATH)
         self.wv = self.model.wv
         self.wv_list = self.wv.vocab
@@ -52,4 +53,15 @@ class Word2vecFeature(Feature):
         '''
         if turis is None:
             raise ValueError('turis list is None.')
-        return np.array([self.model[self.mapper[turi]] for turi in turis])
+
+        idx = None
+        res = []
+        for turi in turis:
+            if self.w2v_type == 'track':
+                idx = turi
+            else:
+                idx = self.mapper[turi]
+
+            res.append(idx)
+
+        return np.array([self.model[turi] for turi in res])
