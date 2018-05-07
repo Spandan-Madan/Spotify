@@ -11,11 +11,16 @@ DATA_PATH = '../data/interim'
 
 class AudioFeatures(Feature):
 
-    def __init__(self, subset=''):
+    def __init__(self, subset='', logging=True):
         Feature.__init__(self)
         afile = join_path(DATA_PATH, '{}audio_features.pkl.bz2'.format(subset))
+
+        if logging:
+            print ("LOADING AUDIO FEATURE...")
         self.df = cpick.load(afile)
         self.preprocess(self.df)
+        if logging:
+            print ("FINISHED LOADING AUDIO FEATURE...")
 
     def preprocess(self, df):
 

@@ -1,4 +1,7 @@
 .DS_Store
+/data/w2v
+/data/raw_playlist
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
