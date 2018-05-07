@@ -8,8 +8,12 @@ sys.path.append("..")
 from data import compressed_pickle as cpick
 from gensim.models.wrappers import FastText
 import fastText
+<<<<<<< HEAD
 from scipy import spatial
 from sklearn.manifold import TSNE
+=======
+
+>>>>>>> b5bf14a7ac3faf63e0cfe6c9ba873e432daa4baa
 
 DATA_PATH = '../data/interim'
 FASTTEXT_PATH = "/Users/timlee/Downloads/wiki.en/wiki.en.bin"
@@ -25,39 +29,34 @@ $ wget https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.en.zip
 
 Unzip it and use the path to this file as FASTTEXT_PATH
 '''
+
+
 class GenreFeatures(Feature):
 
-	def __init__(self, subset='', fasttext_path = FASTTEXT_PATH, logging=True):
-		'''
-		PATH: PATH to your gensim generated word embedding. Default is artist path.
-		'''
-		Feature.__init__(self)
-		afile = join_path(DATA_PATH, 'genres.pkl.bz2'.format(subset))
-		afile_mapper = join_path(DATA_PATH, 'track_uri2artist_uri.pkl.bz2'.format(subset))
+    def __init__(self, subset='', fasttext_path=FASTTEXT_PATH, logging=True):
+        '''
+        PATH: PATH to your gensim generated word embedding. Default is artist path.
+        '''
+        Feature.__init__(self)
+        afile = join_path(DATA_PATH, 'genres.pkl.bz2'.format(subset))
+        afile_mapper = join_path(
+            DATA_PATH, 'track_uri2artist_uri.pkl.bz2'.format(subset))
 
-		if logging:
-			print ("LOADING GENRE..")
-		self.df = cpick.load(afile)
-		self.mapper = cpick.load(afile_mapper)
+        if logging:
+            print("LOADING GENRE..")
+        self.df = cpick.load(afile)
+        self.mapper = cpick.load(afile_mapper)
 
-		if logging:
-			print ("LOADING FASTTEXT...")
-		
-		self.model = fastText.load_model(FASTTEXT_PATH)
+        if logging:
+            print("LOADING FASTTEXT...")
 
-		if logging:
-			print ("FINSIHED LOADING FASTTEXT..")
-			print ("FINISHED LOADING GENRE FEATURE")
+        self.model = fastText.load_model(FASTTEXT_PATH)
 
-	def transform(self,turis):
-		'''
-		Convert track a list of turis to a vector representation.
-		Input: turis is a list of strings of length n
-		Output: will return a vector of shape (n_dim,n)
-		'''
-		if turis is None:
-			vals = np.array([v for v in list(self.df.values())])
+        if logging:
+            print("FINSIHED LOADING FASTTEXT..")
+            print("FINISHED LOADING GENRE FEATURE")
 
+<<<<<<< HEAD
 		output = []
 		for turi in turis:
 			artist_uri = self.mapper[turi]
@@ -71,4 +70,23 @@ class GenreFeatures(Feature):
 			output.append(artist_vec)
 		x = np.array(output)
 		return x
+=======
+    def transform(self, turis):
+        '''
+        Convert track a list of turis to a vector representation.
+        Input: turis is a list of strings of length n
+        Output: will return a vector of shape (n_dim,n)
+        '''
+        if turis is None:
+            vals = np.array([v for v in list(self.df.values())])
+>>>>>>> b5bf14a7ac3faf63e0cfe6c9ba873e432daa4baa
 
+        output = []
+        for turi in turis:
+            artist_uri = self.mapper[turi]
+            row = self.df[artist_uri]
+            artist_vec = np.array(
+                [self.model.get_sentence_vector(genre) for genre in row])
+            artist_vec = np.mean(artist_vec, axis=0)
+            output.append(artist_vec)
+        return np.array(output)

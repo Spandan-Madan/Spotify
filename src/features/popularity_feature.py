@@ -13,22 +13,24 @@ class Popularity(Feature):
 
     def __init__(self, subset='', logging=True):
         Feature.__init__(self)
-        afile = join_path(DATA_PATH, 'track_uri2popularity.pkl.bz2'.format(subset))
+        afile = join_path(
+            DATA_PATH, 'track_uri2popularity.pkl.bz2'.format(subset))
         if logging:
-            print (afile, 'IS LOADING...')
+            print(afile, 'IS LOADING...')
         self.pop = cpick.load(afile)
         self.preprocess()
         if logging:
-            print ('LOADED POPULARITY')
+            print('LOADED POPULARITY')
 
     def preprocess(self):
-        values = np.array([v for v in list(self.pop.values()) if not np.isnan(v)])
-        self.preproc = StandardScaler().fit(values.reshape(-1,1))
+        values = np.array(
+            [v for v in list(self.pop.values()) if not np.isnan(v)])
+        self.preproc = StandardScaler().fit(values.reshape(-1, 1))
         # impute
         mean_value = np.mean(values)
-        for key,val in self.pop.items():
+        for key, val in self.pop.items():
             if np.isnan(val):
-                self.pop[key]=mean_value
+                self.pop[key] = mean_value
 
         return
 
@@ -39,4 +41,3 @@ class Popularity(Feature):
             vals = np.array([self.pop[turi] for turi in turis])
 
         return self.preproc.transform(vals.reshape(-1, 1))
-

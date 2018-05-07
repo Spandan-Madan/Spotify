@@ -11,7 +11,8 @@ import random
 
 
 def data_path(a):
-    return join_path(DATA_PATH,a)
+    return join_path(DATA_PATH, a)
+
 
 class TrackInfo(object):
 
@@ -49,40 +50,40 @@ class TrackInfo(object):
         return plist
 
     def get_playlist(self, pid):
-        return self.get_playlist_turi(pid),self.get_playlist_auri(pid)
+        return self.get_playlist_turi(pid), self.get_playlist_auri(pid)
 
-    def random_tracks(self,k,exclude=None):
+    def random_tracks(self, k, exclude=None):
         extra = 0 if exclude is None else len(exclude)
-        turis = set(random.sample(list(self.tint2turi.values()),k=k+extra))
+        turis = set(random.sample(list(self.tint2turi.values()), k=k + extra))
         if exclude:
-            turis = turis -set(exclude)
+            turis = turis - set(exclude)
         turis = list(turis)[:k]
         auris = [self.turi2auri[t] for t in turis]
         return list(turis), list(auris)
 
-    def get_playlist_pooltest(self,pid,k,n):
-        turi,auri = self.get_playlist(pid)
-        turi_seed,auri_seed = turi[:k],auri[:k]
-        turi_true,auri_true = turi[k:],auri[k:]
-        turi_sub, auri_sub = self.random_tracks(n-len(turi_true),exclude=turi_true)
+    def get_playlist_pooltest(self, pid, k, n):
+        turi, auri = self.get_playlist(pid)
+        turi_seed, auri_seed = turi[:k], auri[:k]
+        turi_true, auri_true = turi[k:], auri[k:]
+        turi_sub, auri_sub = self.random_tracks(
+            n - len(turi_true), exclude=turi_true)
         turi_pool = turi_sub + turi_true
-        auri_pool = auri_sub+ auri_true
-        turi_pool,auri_pool = shuffle_list(turi_pool,auri_pool)
-        return turi_seed,auri_seed, turi_true,auri_true, list(turi_pool),list(auri_pool)
+        auri_pool = auri_sub + auri_true
+        turi_pool, auri_pool = shuffle_list(turi_pool, auri_pool)
+        return turi_seed, auri_seed, turi_true, auri_true, list(turi_pool), list(auri_pool)
 
-    def track_info2uris(self,track_name,artist_name):
+    def track_info2uris(self, track_name, artist_name):
         auris = self.aname2auri[artist_name]
         for auri in auris:
-            tracks = [(t,self.turi2tname[t])  for t in self.auri2turi[auri]]
-            for turi,tname in tracks:
+            tracks = [(t, self.turi2tname[t]) for t in self.auri2turi[auri]]
+            for turi, tname in tracks:
                 if tname == track_name:
-                    return turi,auri
+                    return turi, auri
 
-        raise ValueError('Cannot find {} - {}'.format(track_name,artist_name))
+        raise ValueError('Cannot find {} - {}'.format(track_name, artist_name))
         return
 
-    def uri2track_info(self,uri):
+    def uri2track_info(self, uri):
         tname = self.turi2tname[uri]
         aname = self.auri2aname[self.turi2auri[uri]]
-        return '{} - {}'.format(tname,aname)
-
+        return '{} - {}'.format(tname, aname)

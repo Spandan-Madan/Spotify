@@ -15,9 +15,11 @@ ROOT_NAME = '../data/w2v/'
 FILE_NAME_ARTIST = 'artist_w2v_model_1min_100dim'
 FILE_NAME_ALBUM = 'album_w2v_model_1min_100dim'
 FILE_NAME_TRACK = 'track_w2v_model_1min_100dim'
+
+
 class Word2vecFeature(Feature):
 
-    def __init__(self, subset='', ROOT_PATH= ROOT_NAME, w2v_type='artist', logging=True):
+    def __init__(self, subset='', ROOT_PATH=ROOT_NAME, w2v_type='artist', logging=True):
         '''
         PATH: PATH to your gensim generated word embedding. Default is artist path.
         '''
@@ -25,17 +27,19 @@ class Word2vecFeature(Feature):
 
         if w2v_type == 'artist':
             PATH = ROOT_PATH + FILE_NAME_ARTIST
-            afile = join_path(DATA_PATH, 'track_uri2artist_uri.pkl.bz2'.format(subset))
+            afile = join_path(
+                DATA_PATH, 'track_uri2artist_uri.pkl.bz2'.format(subset))
             self.mapper = cpick.load(afile)
         elif w2v_type == 'album':
             PATH = ROOT_PATH + FILE_NAME_ALBUM
-            afile = join_path(DATA_PATH, 'track_uri2album_uri.pkl.bz2'.format(subset))
+            afile = join_path(
+                DATA_PATH, 'track_uri2album_uri.pkl.bz2'.format(subset))
             self.mapper = cpick.load(afile)
         else:
             PATH = ROOT_PATH + FILE_NAME_TRACK
-        
+
         if logging:
-            print (PATH , 'IS LOADING')
+            print(PATH, 'IS LOADING')
 
         self.w2v_type = w2v_type
         self.model = gensim.models.Word2Vec.load(PATH)
@@ -43,9 +47,9 @@ class Word2vecFeature(Feature):
         self.wv_list = self.wv.vocab
 
         if logging:
-            print ("LOADED W2V")
+            print("LOADED W2V")
 
-    def transform(self,turis):
+    def transform(self, turis):
         '''
         Convert track a list of turis to a vector representation.
         Input: turis is a list of strings of length n

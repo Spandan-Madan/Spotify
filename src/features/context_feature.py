@@ -2,7 +2,6 @@ from .base_feature import Feature
 import numpy as np
 import pandas as pd
 from os.path import join as join_path
-from sklearn.preprocessing import StandardScaler, RobustScaler
 import sys
 sys.path.append("..")
 from data import compressed_pickle as cpick
@@ -12,6 +11,7 @@ MODEL_PATH = '../data/context'
 DATA_PATH = '../data/interim'
 # DATA_PATH = '/Users/mehulsmritiraje/Desktop/Harvard_ME_in_CSE/Spring_2018/AC_297r/Spotify/data/interim'
 
+
 class context_feature(object):
 
     def __init__(self, subset=''):
@@ -20,9 +20,11 @@ class context_feature(object):
         Input: can be whatever you need (dimention of embedding, folder,etc)
         '''
         Feature.__init__(self)
-        file = join_path(MODEL_PATH, '{}data_words_one_hot.pkl.bz2'.format(subset))
+        file = join_path(
+            MODEL_PATH, '{}data_words_one_hot.pkl.bz2'.format(subset))
         self.context_model = cpick.load(file)
-        self.track_data = pd.read_csv(join_path(DATA_PATH, '{}5k_track_uri.csv'.format(subset)))
+        self.track_data = pd.read_csv(
+            join_path(DATA_PATH, '{}5k_track_uri.csv'.format(subset)))
         return
 
     def transform(self, turis):
@@ -40,25 +42,10 @@ class context_feature(object):
 
         scores = []
         for song in songs_artists:
-            score = context_model[(context_model['song'] == song[0]) &\
-                (context_model['artist'] == song[1])]['one_hot']
+            score = context_model[(context_model['song'] == song[0]) &
+                                  (context_model['artist'] == song[1])]['one_hot']
             for s in score:
                 scores.append(s)
         return scores
 
-    def distance(self, seed, pool):
-        '''
-        Calculate the distance between two sets of tracks (seeds) and (pools). Will return a numpy array of distances.
-        Input: seeds is a list of track_uris (strings)
-               pool is a list
-        Output: will return a vector of shape (n_dim,n)
-        '''
-        seed = transform(seed)
-        pool = transform(pool)
 
-        output = []
-        for src in seed:
-            line = [spatial.distance.cosine(src, tgt) for tgt in pool]
-            output.append(line)
-
-        return output
