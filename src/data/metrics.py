@@ -56,12 +56,61 @@ def diversity(plist, dist_f, norm_f):
     return val
 
 
+def dcg_from_ranking(y_true, ranking):
+   """Discounted cumulative gain (DCG) at rank k
+   Parameters
+   ----------
+   y_true : array-like, shape = [n_samples]
+       Ground truth (true relevance labels).
+   ranking : array-like, shape = [k]
+       Document indices, i.e.,
+           ranking[0] is the index of top-ranked document,
+           ranking[1] is the index of second-ranked document,
+           ...
+   k : int
+       Rank.
+   Returns
+   -------
+   DCG @k : float
+   """
+   y_true = np.asarray(y_true)
+   ranking = np.asarray(ranking)
+   rel = y_true[ranking]
+   gains = 2 ** rel - 1
+   discounts = np.log2(np.arange(len(ranking)) + 2)
+   return np.sum(gains / discounts)
+
+def NDCG_1(y_true, ranking):
+   """Normalized discounted cumulative gain (NDCG) at rank k
+   Parameters
+   ----------
+   y_true : array-like, shape = [n_samples]
+       Ground truth (true relevance labels).
+   ranking : array-like, shape = [k]
+       Document indices, i.e.,
+           ranking[0] is the index of top-ranked document,
+           ranking[1] is the index of second-ranked document,
+           ...
+   k : int
+       Rank.
+   Returns
+   -------
+   NDCG @k : float
+   """
+   y_true = np.array(y_true)
+   ranking = np.array(ranking)
+   k = len(ranking)
+   best_ranking = np.argsort(y_true)[::-1]
+   best = dcg_from_ranking(y_true, best_ranking)
+   return dcg_from_ranking(y_true, ranking) / best
+
+
 def IDCG(true, pred):
     n_common = len(set(true).intersection(set(pred)))
     return 1 + np.sum([1.0 / np.log2(i) for i in range(2, n_common + 1)])
 
-
 def DCG(true, pred):
+
     relevant = set(true).intersection(set(pred))
     n_common = len(set(true).intersection(set(pred)))
     if n_common == 0:
@@ -70,7 +119,7 @@ def DCG(true, pred):
         ranks = [i for i,p in enumerate(pred) if p in relevant]
         score = 0.0
         for order, rank in enumerate(ranks):
-            score += float(rank) / np.log2((order + 2))
+            score += float(rank)/float(len(pred)) / np.log2((order + 2))
         return score
 
 

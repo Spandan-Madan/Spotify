@@ -40,7 +40,10 @@ class ContextFeatures(Feature):
         for uri in turis:
             uri = 'spotify:track:' + uri
             row = self.track_data[self.track_data['uri'] == uri]
-            ele = (row['title'].values[0], row['artist'].values[0])
+            try:
+                ele = (row['title'].values[0], row['artist'].values[0])
+            except:
+                ele = (None, None)
             songs_artists.append(ele)
 
         scores = []

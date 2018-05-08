@@ -68,7 +68,7 @@ class GenreFeatures(Feature):
 			artist_uri = self.mapper[turi]
 			row = self.df[artist_uri]
 			if len(row) == 0:
-				np.array([0.0]*300)
+				artist_vec = np.array([0.0]*300)
 				output.append(artist_vec)
 				continue
 			artist_vec = np.array([self.model.get_sentence_vector(genre) for genre in row])
