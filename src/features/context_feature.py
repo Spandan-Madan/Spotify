@@ -1,4 +1,4 @@
-from base_feature import Feature
+from .base_feature import Feature
 import numpy as np
 import pandas as pd
 from os.path import join as join_path
@@ -12,7 +12,7 @@ DATA_PATH = '../data/interim'
 # DATA_PATH = '/Users/mehulsmritiraje/Desktop/Harvard_ME_in_CSE/Spring_2018/AC_297r/Spotify/data/interim'
 
 
-class context_feature(object):
+class context_feature(Feature):
 
     def __init__(self, subset=''):
         '''
@@ -47,19 +47,3 @@ class context_feature(object):
             for s in score:
                 scores.append(s)
         return scores
-
-    def distance(self, seed, pool):
-        '''
-        Calculate the distance between two sets of tracks (seeds) and (pools). Will return a numpy array of distances.
-        Input: seeds is a list of track_uris (strings)
-               pool is a list
-        Output: will return a vector of shape (n_dim,n)
-        '''
-        seed = self.transform(seed)
-        pool = self.transform(pool)
-
-        output = []
-        for src in seed:
-            line = [spatial.distance.cosine(src, tgt) for tgt in pool]
-            output.append(line)
-        return output
