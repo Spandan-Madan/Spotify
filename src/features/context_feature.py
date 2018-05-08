@@ -12,7 +12,7 @@ DATA_PATH = '../data/interim'
 # DATA_PATH = '/Users/mehulsmritiraje/Desktop/Harvard_ME_in_CSE/Spring_2018/AC_297r/Spotify/data/interim'
 
 
-class context_feature(Feature):
+class ContextFeatures(Feature):
 
     def __init__(self, subset=''):
         '''
