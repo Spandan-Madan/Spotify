@@ -14,18 +14,20 @@ DATA_PATH = '../data/interim'
 
 class ContextFeatures(Feature):
 
-    def __init__(self, subset=''):
+    def __init__(self, subset='', logging=True):
         '''
         Feature constructor, will load all relevant data, if using the 5k subset, use the string "5k-"
         Input: can be whatever you need (dimention of embedding, folder,etc)
         '''
         Feature.__init__(self)
+        if logging:
+            print ('CONTEXT FEATURE LOADING')
         file = join_path(
             MODEL_PATH, '{}data_words_one_hot.pkl.bz2'.format(subset))
         self.context_model = cpick.load(file)
-
         self.track_data = pd.read_csv(join_path(DATA_PATH, '{}5k_track_uri.csv'.format(subset)))
-        return
+        if logging:
+            print ('CONTEXT FEATURE LOADING FINISHED')
 
     def transform(self, turis):
         '''
@@ -36,14 +38,27 @@ class ContextFeatures(Feature):
         # Get song and artist from turis
         songs_artists = []
         for uri in turis:
+            uri = 'spotify:track:' + uri
             row = self.track_data[self.track_data['uri'] == uri]
             ele = (row['title'].values[0], row['artist'].values[0])
             songs_artists.append(ele)
 
         scores = []
         for song in songs_artists:
-            score = self.context_model[(self.context_model['song'] == song[0]) &\
-                (self.context_model['artist'] == song[1])]['one_hot']
-            for s in score:
-                scores.append(s)
+            song_match = (self.context_model['song'] == song[0])
+            artist_match = (self.context_model['artist'] == song[1])
+
+            score = np.array([0] * 15)
+            if (any(song_match)) and (any(artist_match)):
+                try:
+                    score = self.context_model[(self.context_model['song'] == song[0]) & (self.context_model['artist'] == song[1])]['one_hot'][0]
+                    score = np.array(score)
+                except:
+                    score = np.array([0] * 15)
+
+            scores.append(score)
+
+        scores = np.array(scores)
+        # print ('SCORES SHAPE:', scores.shape)
+        # print ('SCORE LEN', len(scores))
         return scores
