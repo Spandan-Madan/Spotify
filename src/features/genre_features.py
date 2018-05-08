@@ -10,12 +10,14 @@ from gensim.models.wrappers import FastText
 import fastText
 
 DATA_PATH = '../data/interim'
-FASTTEXT_PATH = "/Users/timlee/Downloads/wiki.en/wiki.en.bin"
+FASTTEXT_PATH = "../data/fasttext/wiki.en.bin"
 
 '''
 INSTRUCTION:
 $ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
+(IF YOU ARE INSTALLING THIS ON A LINUX MACHINE)
+$ sudo apt-get install g++
 $ pip install .
 
 YOU NEED TO DOWNLOAD FASTTEXT BIN FILE TOO FOR ENGLISH.
