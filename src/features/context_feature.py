@@ -6,11 +6,11 @@ import sys
 sys.path.append("..")
 from data import compressed_pickle as cpick
 from scipy import spatial
+from ast import literal_eval
 MODEL_PATH = '../data/context'
 # MODEL_PATH = '/Users/mehulsmritiraje/Desktop/Harvard_ME_in_CSE/Spring_2018/AC_297r/Spotify/data/context'
 DATA_PATH = '../data/interim'
 # DATA_PATH = '/Users/mehulsmritiraje/Desktop/Harvard_ME_in_CSE/Spring_2018/AC_297r/Spotify/data/interim'
-
 
 class ContextFeatures(Feature):
 
@@ -22,10 +22,10 @@ class ContextFeatures(Feature):
         Feature.__init__(self)
         if logging:
             print ('CONTEXT FEATURE LOADING')
-        file = join_path(
-            MODEL_PATH, '{}data_words_one_hot.pkl.bz2'.format(subset))
-        self.context_model = cpick.load(file)
-        self.track_data = pd.read_csv(join_path(DATA_PATH, '{}5k_track_uri.csv'.format(subset)))
+        # file = join_path(
+        #    MODEL_PATH, '{}data_words_one_hot.pkl.bz2'.format(subset))
+        # self.context_model = cpick.load(file)
+        self.track_data = pd.read_csv(join_path(DATA_PATH, '{}turi2context.csv'.format(subset)))
         if logging:
             print ('CONTEXT FEATURE LOADING FINISHED')
 
@@ -36,32 +36,31 @@ class ContextFeatures(Feature):
         Output: will return a vector of shape (n_dim,n)
         '''
         # Get song and artist from turis
-        songs_artists = []
+        scores = []
         for uri in turis:
             uri = 'spotify:track:' + uri
             row = self.track_data[self.track_data['uri'] == uri]
-            try:
-                ele = (row['title'].values[0], row['artist'].values[0])
-            except:
-                ele = (None, None)
-            songs_artists.append(ele)
-
-        scores = []
-        for song in songs_artists:
-            song_match = (self.context_model['song'] == song[0])
-            artist_match = (self.context_model['artist'] == song[1])
-
-            score = np.array([0] * 15)
-            if (any(song_match)) and (any(artist_match)):
-                try:
-                    score = self.context_model[(self.context_model['song'] == song[0]) & (self.context_model['artist'] == song[1])]['one_hot'][0]
-                    score = np.array(score)
-                except:
-                    score = np.array([0] * 15)
-
-            scores.append(score)
+            ele = row['scores'].values
+            scores.append(literal_eval(ele[0]))
 
         scores = np.array(scores)
         # print ('SCORES SHAPE:', scores.shape)
         # print ('SCORE LEN', len(scores))
         return scores
+
+    def distance(self, seed, pool):
+        '''
+        Calculate the distance between two sets of tracks (seeds) and (pools). Will return a numpy array of distances.
+        Input: seeds is a list of track_uris (strings)
+               pool is a list
+        Output: will return a vector of shape (n_dim,n)
+        '''
+        seed = self.transform(seed)
+        pool = self.transform(pool)
+
+        output = []
+        for src in seed:
+            line = [spatial.distance.cosine(src, tgt) for tgt in pool]
+            output.append(line)
+
+        return output
