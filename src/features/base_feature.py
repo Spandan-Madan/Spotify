@@ -68,13 +68,13 @@ class Feature(object):
         seed_vec = self.transform(seeds)
         pool_vec = self.transform(pool)
         if strat == 'mean':
-            return self.mean_distance(seed_vec, pool_vec)
+            return self.mean_distance(seed_vec, pool_vec, **kwargs)
         elif strat == 'all':
-            return self.all_distance(seed_vec, pool_vec)
+            return self.all_distance(seed_vec, pool_vec, **kwargs)
         elif strat == 'centroid':
-            return self.mean_distance(seed_vec, pool_vec)
+            return self.centroid_distance(seed_vec, pool_vec, **kwargs)
         elif strat == 'medoid':
-            return self.mean_distance(seed_vec, pool_vec)
+            return self.medoid_distance(seed_vec, pool_vec, **kwargs)
         else:
             raise ValueError('{} nor implemented'.format(strat))
         return

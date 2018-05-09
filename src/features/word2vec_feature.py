@@ -12,9 +12,9 @@ sys.path.append("..")
 
 DATA_PATH = '../data/interim'
 ROOT_NAME = '../data/w2v/'
-FILE_NAME_ARTIST = 'artist_w2v_model_1min_100dim'
-FILE_NAME_ALBUM = 'album_w2v_model_1min_100dim'
-FILE_NAME_TRACK = 'track_w2v_model_1min_100dim'
+FILE_NAME_ARTIST = 'artist_128_1cut'
+FILE_NAME_ALBUM = 'album_128_1cut'
+FILE_NAME_TRACK = 'track_128_1cut'
 
 
 class Word2vecFeature(Feature):
@@ -69,3 +69,22 @@ class Word2vecFeature(Feature):
             res.append(idx)
 
         return np.array([self.model[turi] for turi in res])
+
+
+
+class TrackFeature(Word2vecFeature):
+
+    def __init__(self, subset='', ROOT_PATH=ROOT_NAME, logging=True):
+        Word2vecFeature.__init__(self, subset, ROOT_PATH, 'track', logging)
+
+
+class ArtistFeature(Word2vecFeature):
+
+    def __init__(self, subset='', ROOT_PATH=ROOT_NAME, logging=True):
+        Word2vecFeature.__init__(self, subset, ROOT_PATH, 'artist', logging)
+
+
+class AlbumFeature(Word2vecFeature):
+
+    def __init__(self, subset='', ROOT_PATH=ROOT_NAME, logging=True):
+        Word2vecFeature.__init__(self, subset, ROOT_PATH, 'album', logging)
