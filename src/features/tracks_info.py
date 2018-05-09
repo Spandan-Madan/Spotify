@@ -23,6 +23,8 @@ class TrackInfo(object):
         # track information
         afile = data_path('{}track_int2track_uri.pkl.bz2'.format(subset))
         self.tint2turi = cpick.load(afile)
+        self.all_turis = list(set([self.tint2turi[tint]
+                                   for pl in self.plists for tint in pl]))
         afile = data_path('track_uri2track_name.pkl.bz2')
         self.turi2tname = cpick.load(afile)
         afile = data_path('track_uri2artist_uri.pkl.bz2')
@@ -54,7 +56,7 @@ class TrackInfo(object):
 
     def random_tracks(self, k, exclude=None):
         extra = 0 if exclude is None else len(exclude)
-        turis = set(random.sample(list(self.tint2turi.values()), k=k + extra))
+        turis = set(random.sample(self.all_turis, k=k + extra))
         if exclude:
             turis = turis - set(exclude)
         turis = list(turis)[:k]
