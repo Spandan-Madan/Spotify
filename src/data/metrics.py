@@ -133,7 +133,7 @@ def recall(true, pred):
     true: ground truth
 
     """
-    return len(set(true).intersection(set(pred))) / float(len(true))
+    return len(set(true).intersection(set(pred))) / float(len(set(true)))
 
 
 def recommended_song_click(true, pred):

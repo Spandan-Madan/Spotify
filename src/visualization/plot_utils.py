@@ -22,44 +22,51 @@ def save_result(name, adir=None):
     return
 
 
-def glance_dict(d,n=3):
+def glance_dict(d, n=3):
     return dict(itertools.islice(d.items(), n))
+
 
 def summary_pooling_table(stats):
     p_df = pd.DataFrame(stats)
+
     def dist(x):
-        return '{:.3f} ({:.3f})'.format(np.mean(x),np.std(x))
-    f = {'pid':['count'], 'r-tracks':{'mean (std)':dist},'r-artist':{'mean (std)':dist}}
-    return p_df.groupby(['k','strategy','n']).agg(f)
+        return '{:.3f} ({:.3f})'.format(np.mean(x), np.std(x))
+    f = {'pid': [
+        'count'], 'recall-tracks': {'mean (std)': dist}, 'recall-artist': {'mean (std)': dist}}
+    return p_df.groupby(['k', 'strategy', 'n']).agg(f)
+
 
 def pooling_plots(stats):
-    re_stats=[]
+    re_stats = []
     for i in stats:
-        re_stats.append(OrderedDict([('pid',i['pid']),('k',i['k']),('strategy',i['strategy']),('n',i['n']),('metric','r-tracks'),('value',i['r-tracks'])]))
-        re_stats.append(OrderedDict([('pid',i['pid']),('k',i['k']),('strategy',i['strategy']),('n',i['n']),('metric','r-artist'),('value',i['r-artist'])]))
-    for indx,grp in pd.DataFrame(re_stats).groupby('strategy'):
+        re_stats.append(OrderedDict([('pid', i['pid']), ('k', i['k']), ('strategy', i['strategy']), (
+            'n', i['n']), ('metric', 'r-tracks'), ('value', i['recall-tracks'])]))
+        re_stats.append(OrderedDict([('pid', i['pid']), ('k', i['k']), ('strategy', i['strategy']), (
+            'n', i['n']), ('metric', 'recall-artist'), ('value', i['recall-artist'])]))
+    for indx, grp in pd.DataFrame(re_stats).groupby('strategy'):
 
-        sns.violinplot(x='k',y='value',hue='metric', data=grp,cut=0,split=True)
-        plt.ylim([0,1])
-        plt.legend(bbox_to_anchor=(0.5, 1),ncol=2)
-        plt.title('Startegy = {}'.format(indx))
-        plt.ylabel('r-precision')
+        sns.violinplot(x='k', y='value', hue='metric',
+                       data=grp, cut=0, split=True)
+        plt.ylim([0, 1])
+        plt.legend(bbox_to_anchor=(0.5, 1), ncol=2)
+        plt.title('Strategy = {}'.format(indx))
+        plt.ylabel('recall')
         plt.show()
         # distplots
-    for indx,grp in pd.DataFrame(stats).groupby('strategy'):
+    for indx, grp in pd.DataFrame(stats).groupby('strategy'):
         cols = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
-        sns.distplot(grp['r-tracks'],label='Tracks',color=cols[0])
-        dist_stats_box(grp['r-tracks'])
-        plt.xlim([0,1])
-        plt.xlabel('R-precision (Tracks)')
+        sns.distplot(grp['recall-tracks'], label='Tracks', color=cols[0])
+        dist_stats_box(grp['recall-tracks'])
+        plt.xlim([0, 1])
+        plt.xlabel('Recall (Tracks)')
         plt.ylabel('Normalized Frequency')
         plt.title('Strategy = {}'.format(indx))
         plt.show()
-        sns.distplot(grp['r-artist'],label='Artist',color=cols[1])
-        dist_stats_box(grp['r-artist'])
-        plt.xlim([0,1])
-        plt.xlabel('R-precision (Artist)')
+        sns.distplot(grp['recall-artist'], label='Artist', color=cols[1])
+        dist_stats_box(grp['recall-artist'])
+        plt.xlim([0, 1])
+        plt.xlabel('Recall (Artist)')
         plt.ylabel('Normalized Frequency')
         plt.title('Strategy = {}'.format(indx))
         plt.show()
@@ -108,6 +115,7 @@ def pandas_settings():
     pd.options.display.float_format = '{:,.2f}'.format
     return
 
+
 def plot_settings():
     """Plot settings"""
     # wierdly have to plot stuff first to get
@@ -135,11 +143,13 @@ def plot_settings():
 
     return
 
-def write_latex_table(df, name, adir='.', render=True,index=True):
+
+def write_latex_table(df, name, adir='.', render=True, index=True):
     # table results
     tex_name = '{}.tex'.format(name)
     filename = os.path.join(adir, '{}.tex'.format(name))
-    a_str = df.to_latex(multicolumn=True, multirow=True, escape=False,index=index)
+    a_str = df.to_latex(multicolumn=True, multirow=True,
+                        escape=False, index=index)
     with open(filename, 'w') as a_file:
         a_file.write(LATEX_TABLE.format(a_str))
     if render:
