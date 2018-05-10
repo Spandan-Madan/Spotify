@@ -5,12 +5,12 @@ from os.path import join as join_path
 import sys
 sys.path.append("..")
 from data import compressed_pickle as cpick
-from scipy import spatial
-from ast import literal_eval
+
 MODEL_PATH = '../data/context'
 # MODEL_PATH = '/Users/mehulsmritiraje/Desktop/Harvard_ME_in_CSE/Spring_2018/AC_297r/Spotify/data/context'
 DATA_PATH = '../data/interim'
 # DATA_PATH = '/Users/mehulsmritiraje/Desktop/Harvard_ME_in_CSE/Spring_2018/AC_297r/Spotify/data/interim'
+
 
 class ContextFeatures(Feature):
 
@@ -25,7 +25,8 @@ class ContextFeatures(Feature):
         # file = join_path(
         #    MODEL_PATH, '{}data_words_one_hot.pkl.bz2'.format(subset))
         # self.context_model = cpick.load(file)
-        self.track_data = pd.read_csv(join_path(DATA_PATH, '{}turi2context.csv'.format(subset)))
+        afile = join_path(DATA_PATH, '{}track_uri2context.pkl.bz2'.format(subset))
+        self.turi2context = cpick.load(afile)
         if logging:
             print ('CONTEXT FEATURE LOADING FINISHED')
 
@@ -36,31 +37,12 @@ class ContextFeatures(Feature):
         Output: will return a vector of shape (n_dim,n)
         '''
         # Get song and artist from turis
-        scores = []
-        for uri in turis:
-            uri = 'spotify:track:' + uri
-            row = self.track_data[self.track_data['uri'] == uri]
-            ele = row['scores'].values
-            scores.append(literal_eval(ele[0]))
-
+        scores = [self.turi2context[turi] for turi in turis]
+        for indx, score in enumerate(scores):
+            # data imputation
+            if score is None:
+                scores[indx] = np.ones(15)
         scores = np.array(scores)
         # print ('SCORES SHAPE:', scores.shape)
         # print ('SCORE LEN', len(scores))
         return scores
-
-    def distance(self, seed, pool):
-        '''
-        Calculate the distance between two sets of tracks (seeds) and (pools). Will return a numpy array of distances.
-        Input: seeds is a list of track_uris (strings)
-               pool is a list
-        Output: will return a vector of shape (n_dim,n)
-        '''
-        seed = self.transform(seed)
-        pool = self.transform(pool)
-
-        output = []
-        for src in seed:
-            line = [spatial.distance.cosine(src, tgt) for tgt in pool]
-            output.append(line)
-
-        return output
